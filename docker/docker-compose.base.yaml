@@ -1,0 +1,29 @@
+services:
+  lnd:
+    image: bitlight-local-env/lnd:latest
+    build:
+      context: lnd
+    environment:
+      - RPCHOST=10.200.10.5
+      - RPCUSER=${RPC_USER}
+      - RPCPASS=${RPC_PASSWORD}
+      - NETWORK=regtest
+      - CHAIN=bitcoin
+      - LND_DEBUG=debug
+      - BACKEND=bitcoind
+    entrypoint: [ "./start-lnd.sh" ]
+
+  wallet:
+    image: bitlight-local-env/wallet:latest
+    build:
+      context: wallet
+    environment:
+      - RPCHOST=10.200.10.5
+      - RPCUSER=${RPC_USER}
+      - RPCPASS=${RPC_PASSWORD}
+      - NETWORK=regtest
+
+  esplora:
+    image: bitlight-local-env/esplora:latest
+    build:
+      context: esplora

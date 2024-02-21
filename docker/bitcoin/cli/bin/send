@@ -1,0 +1,8 @@
+#!/bin/sh
+
+
+address=$1
+amount=$2
+
+load_wallet 2> /dev/null
+bitcoin-cli -rpcwallet=wallet sendtoaddress "$address" "$amount" && echo "Sent $amount to $address" || echo "Failed to send $amount to $address"

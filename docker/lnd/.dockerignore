@@ -1,0 +1,23 @@
+data
+
+# Ignore git and metadata directories
+.git
+.github
+
+# Ignore all markdown files
+*.md
+
+# Ignore all log files
+*.log
+
+# Ignore all temporary files
+*~
+*.tmp
+*.bak
+
+# Ignore node modules
+node_modules
+
+# Ignore IDE related files
+.idea
+.vscode

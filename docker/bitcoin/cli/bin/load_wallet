@@ -1,0 +1,20 @@
+#!/bin/sh
+
+wallet_name=${1:-"wallet"}
+
+# Check if the wallet is exist or create it if not
+if [ ! -d "/data/.bitcoin/regtest/wallets/${wallet_name}" ]; then
+  bitcoin-cli createwallet "${wallet_name}"
+  echo "Wallet created"
+fi
+
+# Check if the wallet is loaded or load it if not
+if ! bitcoin-cli listwallets | grep -q $wallet_name; then
+  bitcoin-cli loadwallet $wallet_name
+  echo "Wallet loaded"
+fi
+
+# return the wallet address
+address=$(bitcoin-cli -rpcwallet=$wallet_name getnewaddress)
+balance=$(bitcoin-cli -rpcwallet=$wallet_name getbalance)
+echo "load ${wallet_name}'s address: ${address} with balance: ${balance}"
