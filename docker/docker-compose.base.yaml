@@ -1,6 +1,6 @@
 services:
   lnd:
-    image: bitlight-local-env/lnd:latest
+    image: ${DOCKER_NS:-bitlightlabs}/lnd:${DOCKER_TAG:-latest}
     build:
       context: lnd
     environment:
@@ -14,7 +14,7 @@ services:
     entrypoint: [ "./start-lnd.sh" ]
 
   wallet:
-    image: bitlight-local-env/wallet:latest
+    image: ${DOCKER_NS:-bitlightlabs}/bdk-cli:${DOCKER_TAG:-latest}
     build:
       context: wallet
     environment:
@@ -24,6 +24,11 @@ services:
       - NETWORK=regtest
 
   esplora:
-    image: bitlight-local-env/esplora:latest
+    image: ${DOCKER_NS:-bitlightlabs}/esplora:${DOCKER_TAG:-latest}
     build:
       context: esplora
+
+  esplora-api:
+    image: ${DOCKER_NS:-bitlightlabs}/esplora-api:${DOCKER_TAG:-latest}
+    build:
+      context: esplora-api

@@ -137,3 +137,8 @@ lint:
 
 start-docs:
 	cd docs && make serve
+
+build-esplora-api-docker:
+	@echo "Releasing docker image for $*"
+	@cd docker/esplora-api && \
+		docker buildx build --platform linux/amd64,linux/arm64 -t bitlightlabs/esplora-api:latest .

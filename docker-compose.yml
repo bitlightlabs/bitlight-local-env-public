@@ -86,13 +86,13 @@ services:
       - "${EXPLORE_UI_PORT:-5002}:5000"
 
   esplora-api:
-    platform: linux/amd64
-    image: blockstream/esplora:builder-bitcoin-regtest
+    extends:
+      service: esplora-api
+      file: docker/docker-compose.base.yaml
     networks:
       - regtest
     depends_on:
       - bitcoin-core
-    entrypoint: /srv/explorer/electrs_bitcoin/bin/electrs
     command:
       - -vvvv
       - --network
