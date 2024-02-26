@@ -83,7 +83,18 @@ If you want to add new wallets,
 
 #### Create A new wallet Alice and send 25 BTC to Alice's address
 
-Run `make alice-cli` to enter the Alice Wallet container, and run the following commands:
+Run `make alice-cli` to enter the Alice Wallet container and chose the descriptor to start the REPL.
+
+```console
+Please choose a descriptor to start the REPL:
+ - (9) RGB Descriptor 9/*: tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/*)
+ - (90) RGB Descriptor 9/0: tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/0)
+ - (00) Bitcoin Descriptor 0/0: tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/0/0)
+ - (*) quit
+Enter your choice: 9 <== choose 9 for RGB Descriptor 9/*
+```
+
+Now, you can use the `wallet` object to interact with the wallet, for example:
 ```shell
 wallet sync
 wallet get_balance
@@ -104,11 +115,19 @@ Root XPRV           :  tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365c
 XPUB                :  [5183a8d8/86'/1'/0']tpubDDtdVYn7LWnWNUXADgoLGu48aLH4dZ17hYfRfV9rjB7QQK3BrphnrSV6pGAeyfyiAM7DmXPJgRzGoBdwWvRoFdJoMVpWfmM9FCk8ojVhbMS/*
 Fixed XPUB          :  [5183a8d8/86'/1'/0']tpubDDtdVYn7LWnWNUXADgoLGu48aLH4dZ17hYfRfV9rjB7QQK3BrphnrSV6pGAeyfyiAM7DmXPJgRzGoBdwWvRoFdJoMVpWfmM9FCk8ojVhbMS/<0;1;9;10>/*
 RGB Descriptor 9/0  :  tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/0)
-RGB Address         :  tb1pr3rupmav8a7av7dqfyvynu2wk02lduggnh9ln4ndze9aqvuv9y3smxy992
+RGB Address         :  bcrt1pr3rupmav8a7av7dqfyvynu2wk02lduggnh9ln4ndze9aqvuv9y3sklwrss
 RGB Descriptor 9/*  :  tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/*)
+Bitcoin Descriptor 0/0:  tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/0/0)
+Bitcoin Address     :  bcrt1pn0s2pajhsw38fnpgcj79w3kr3c0r89y3xyekjt8qaudje70g4shs20nwfx
 Balance             :  0
 Wallet is ready
-Starting REPL...
+Please choose a descriptor to start the REPL:
+ - (9) RGB Descriptor 9/*: tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/*)
+ - (90) RGB Descriptor 9/0: tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/0)
+ - (00) Bitcoin Descriptor 0/0: tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/0/0)
+ - (*) quit
+Enter your choice: 9
+Starting REPL with descriptor tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/*)
 use 'wallet' to interact with the wallet of alice
 use 'help' to see available commands
 Available commands:
@@ -195,9 +214,17 @@ Fixed XPUB          :  [5183a8d8/86'/1'/0']tpubDDtdVYn7LWnWNUXADgoLGu48aLH4dZ17h
 RGB Descriptor 9/0  :  tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/0)
 RGB Address         :  bcrt1pr3rupmav8a7av7dqfyvynu2wk02lduggnh9ln4ndze9aqvuv9y3sklwrss
 RGB Descriptor 9/*  :  tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/*)
+Bitcoin Descriptor 0/0:  tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/0/0)
+Bitcoin Address     :  bcrt1pn0s2pajhsw38fnpgcj79w3kr3c0r89y3xyekjt8qaudje70g4shs20nwfx
 Balance             :  2500000000
 Wallet is ready
-Starting REPL...
+Please choose a descriptor to start the REPL:
+ - (9) RGB Descriptor 9/*: tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/*)
+ - (90) RGB Descriptor 9/0: tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/0)
+ - (00) Bitcoin Descriptor 0/0: tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/0/0)
+ - (*) quit
+Enter your choice: 9  <== choose 9 for RGB Descriptor 9/*
+Starting REPL with descriptor tr(tprv8ZgxMBicQKsPeHzjP5LTL818LxwHbJNLZRa98Qdnn7M98fW15365cB1Sz9QZvYufASRKH6JEPhfpxVuFTKMHxDcEAVboqKuZdMmxzKVhMnW/86'/1'/0'/9/*)
 use 'wallet' to interact with the wallet of alice
 use 'help' to see available commands
 Available commands:

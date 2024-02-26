@@ -73,7 +73,7 @@ function fix_rgb_descriptor() {
   echo "$rgb_descriptor"
 }
 
-function generate_rgb_address() {
+function generate_address() {
   descriptor="$1"
   address=$(bdk-cli -n $NETWORK wallet --descriptor $descriptor get_new_address)
   echo $address | jq -r '.address'
@@ -85,10 +85,20 @@ function concat_rgb_descriptor() {
   echo "$rgb_descriptor"
 }
 
+function concat_bitcoin_descriptor() {
+  xprv="$1"
+  descriptor="tr(${xprv}/86'/1'/0'/0/0)"
+  echo "$descriptor"
+}
+
 function get_balance() {
   rgb_descriptor="$1"
   bdk-cli -n $NETWORK wallet -w $WALLET_NAME -s $ELECTRUM_URL --descriptor $rgb_descriptor sync >/dev/null
   bdk-cli -n $NETWORK wallet -w $WALLET_NAME -s $ELECTRUM_URL --descriptor $rgb_descriptor get_balance
+}
+
+function start_repl() {
+  bdk-cli -n $NETWORK repl -w $1 -s $ELECTRUM_URL --descriptor "$2"
 }
 
 print_row() {
@@ -102,9 +112,12 @@ xpub=$(generate_xpub_descriptor $root_xprv)
 xprv=$(generate_xprv_descriptor $root_xprv)
 fixed_xpub=$(fix_xpub_descriptor $xpub)
 rgb_descriptor_9_0=$(concat_rgb_descriptor $root_xprv)
-rgb_address=$(generate_rgb_address $rgb_descriptor_9_0)
+rgb_address=$(generate_address $rgb_descriptor_9_0)
 rgb_descriptor_9=$(fix_rgb_descriptor $root_xprv)
 balance="$(get_balance $rgb_descriptor_9 | jq -r '.satoshi.confirmed')"
+
+bitcoin_descriptor=$(concat_bitcoin_descriptor $root_xprv)
+bitcoin_address=$(generate_address $bitcoin_descriptor)
 
 print_row "Network" "$NETWORK"
 print_row "Wallet Name" "$WALLET_NAME"
@@ -115,12 +128,14 @@ print_row "Fixed XPUB" "$fixed_xpub"
 print_row "RGB Descriptor 9/0" "$rgb_descriptor_9_0"
 print_row "RGB Address" "$rgb_address"
 print_row "RGB Descriptor 9/*" "$rgb_descriptor_9"
+print_row "Bitcoin Descriptor 0/0" "$bitcoin_descriptor"
+print_row "Bitcoin Address" "$bitcoin_address"
 print_row "Balance" "$balance"
 echo "Wallet is ready"
 
-if [ "$1" = "repl" ]; then
-  echo "Starting REPL..."
-  echo "use 'wallet' to interact with the wallet of ${WALLET_NAME}"
+function welcome() {
+  echo "Starting REPL with descriptor ${2}"
+  echo "use 'wallet' to interact with the wallet of ${1}"
   echo "use 'help' to see available commands"
   echo "Available commands:"
   echo "  wallet sync"
@@ -128,8 +143,38 @@ if [ "$1" = "repl" ]; then
   echo "  wallet get_new_address"
   echo "  wallet list_unspent"
   echo "Press Ctrl+D to exit"
-  bdk-cli -n $NETWORK repl -w $WALLET_NAME -s $ELECTRUM_URL --descriptor "$rgb_descriptor_9"
-  exit 0
+}
+
+if [ "$1" = "repl" ]; then
+  echo 'Please choose a descriptor to start the REPL:'
+  echo ' - (9) RGB Descriptor 9/*:' $rgb_descriptor_9
+  echo ' - (90) RGB Descriptor 9/0:' $rgb_descriptor_9_0
+  echo ' - (00) Bitcoin Descriptor 0/0:' $bitcoin_descriptor
+  echo ' - (*) quit'
+  if [ -n "$2" ]; then
+    choice=$2
+    echo "Choice is set to $choice, skipping the prompt..."
+  else
+    echo -n "Enter your choice: "
+    read -r choice
+  fi
+  case $choice in
+    9)
+      welcome $WALLET_NAME $rgb_descriptor_9
+      bdk-cli -n $NETWORK repl -w $WALLET_NAME -s $ELECTRUM_URL --descriptor "$rgb_descriptor_9"
+      ;;
+    90)
+      welcome $WALLET_NAME.90 $rgb_descriptor_9_0
+      bdk-cli -n $NETWORK repl -w $WALLET_NAME.90 -s $ELECTRUM_URL --descriptor "$rgb_descriptor_9_0"
+      ;;
+    00)
+      welcome $WALLET_NAME.00 $bitcoin_descriptor
+      bdk-cli -n $NETWORK repl -w $WALLET_NAME.00 -s $ELECTRUM_URL --descriptor "$bitcoin_descriptor"
+      ;;
+    *)
+      echo "Exiting..."
+      ;;
+  esac
 else
   echo "Press Ctrl+C to exit"
   while true; do sleep 1; done
