@@ -75,7 +75,7 @@ function fix_rgb_descriptor() {
 
 function generate_rgb_address() {
   descriptor="$1"
-  address=$(bdk-cli wallet --descriptor $descriptor get_new_address)
+  address=$(bdk-cli -n $NETWORK wallet --descriptor $descriptor get_new_address)
   echo $address | jq -r '.address'
 }
 

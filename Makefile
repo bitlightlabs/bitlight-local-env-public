@@ -142,3 +142,8 @@ build-esplora-api-docker:
 	@echo "Releasing docker image for $*"
 	@cd docker/esplora-api && \
 		docker buildx build --platform linux/amd64,linux/arm64 -t bitlightlabs/esplora-api:latest .
+
+
+build-wallet-docker:
+	@echo "Releasing docker image for $*"
+	docker build -t bitlightlabs/bdk-cli:latest docker/wallet
