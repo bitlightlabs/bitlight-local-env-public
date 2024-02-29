@@ -97,7 +97,7 @@ alice-cli:
 
 .PHONY: bob-cli
 bob-cli:
-	docker-compose -p bitlight-local-env exec -it  wallet-alice /start-wallet.sh repl
+	docker-compose -p bitlight-local-env exec -it  wallet-bob /start-wallet.sh repl
 
 wallet-%-cli:
 	echo "Starting wallet $* cli..."
