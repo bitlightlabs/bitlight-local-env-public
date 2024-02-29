@@ -1,10 +1,12 @@
 PWD := $(shell pwd)
 
-export BITCOIN_COMPOSE_PROJECT_NAME=bitlight-local-env-bitcoin
-export LND_COMPOSE_PROJECT_NAME=bitlight-local-env-lnd
+export PROJECT_NAME=bitlight-local-env
+export BITCOIN_COMPOSE_PROJECT_NAME=$(PROJECT_NAME)-bitcoin
+export LND_COMPOSE_PROJECT_NAME=$(PROJECT_NAME)-lnd
 export NETWORK_NAME=regtest
 export NETWORK_SUBNET=10.200.10.0/24
 export PATH=$(PWD)/scripts:$(shell echo $$PATH)
+export DOCKER_COMPOSE=docker compose
 
 include .env
 export $(shell sed 's/=.*//' .env)
@@ -27,35 +29,35 @@ clean-network:
 .PHONY: build-images
 build-images:
 	@echo "Building images..."
-	cd docker && docker-compose build
+	cd docker && $(DOCKER_COMPOSE) build
 
 .PHONY: up
 up: network
 	@echo "$@ services... in detached mode"
-	docker-compose -p bitlight-local-env up -d
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) up -d
 
 up-lnd: up
 	@echo "$@ services... in detached mode"
-	docker-compose -p bitlight-local-env-lnd -f docker-compose-lnd.yml up -d
+	$(DOCKER_COMPOSE) -p $(LND_COMPOSE_PROJECT_NAME) -f docker-compose-lnd.yml up -d
 
 down-lnd:
 	@echo "$@ services..."
-	docker-compose -p bitlight-local-env-lnd -f docker-compose-lnd.yml down -v
+	$(DOCKER_COMPOSE) -p $(LND_COMPOSE_PROJECT_NAME) -f docker-compose-lnd.yml down -v
 
 .PHONY: up-foreground
 up-foreground: network
 	@echo "$@ services... in foreground mode"
-	docker-compose -p bitlight-local-env up
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) up
 
 .PHONY: stop
 stop:
 	@echo "$@ services..."
-	docker-compose -p bitlight-local-env $@
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) $@
 
 .PHONY:down
 down:
 	@echo "$@ services..."
-	docker-compose -p bitlight-local-env $@ -v
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) $@ -v
 
 .PHONY: restart
 restart: down up full-logs
@@ -65,11 +67,11 @@ recreate: clean up full-logs
 
 .PHONY: logs
 logs:
-	docker-compose -p bitlight-local-env logs -f --tail=20
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) logs -f --tail=20
 
 .PHONY: full-logs
 full-logs:
-	docker-compose -p bitlight-local-env logs -f
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) logs -f
 
 .PHONY: clean
 clean: down clean-bitcoin-data clean-network down-lnd
@@ -89,19 +91,19 @@ clean-lnd-data:
 
 .PHONY: cli core-cli
 cli core-cli:
-	docker-compose -p bitlight-local-env exec -it -w /cli bitcoin-core /cli/active.sh
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) exec -it -w /cli bitcoin-core /cli/active.sh
 
 .PHONY: alice-cli
 alice-cli:
-	docker-compose -p bitlight-local-env exec -it  wallet-alice /start-wallet.sh repl
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) exec -it  wallet-alice /start-wallet.sh repl
 
 .PHONY: bob-cli
 bob-cli:
-	docker-compose -p bitlight-local-env exec -it  wallet-bob /start-wallet.sh repl
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) exec -it  wallet-bob /start-wallet.sh repl
 
 wallet-%-cli:
 	echo "Starting wallet $* cli..."
-	docker-compose -p bitlight-local-env exec -it  wallet-$* /start-wallet.sh repl
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) exec -it  wallet-$* /start-wallet.sh repl
 
 active:
 	@echo "Activating environment..."

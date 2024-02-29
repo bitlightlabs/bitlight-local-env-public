@@ -105,7 +105,7 @@ wallet get_new_address
 The output should be similar to the following:
 ```console
 $ make alice-cli 
-docker-compose -p bitlight-local-env exec -it  wallet-alice /start-wallet.sh repl
+docker compose -p bitlight-local-env exec -it  wallet-alice /start-wallet.sh repl
 Starting wallet...
 Wallet Name: alice
 Network             :  regtest
@@ -174,7 +174,7 @@ mint 1
 The output should be similar to the following:
 ```console
 $ make core-cli 
-docker-compose -p bitlight-local-env exec -it -w /cli bitcoin-core /cli/active.sh
+docker compose -p bitlight-local-env exec -it -w /cli bitcoin-core /cli/active.sh
 /cli $ load_wallet
 load wallet's address: bcrt1qv6428v9lzk9ac5aswp4hlaf773r48824stfvx9 with balance: 50.00000000
 /cli $ send bcrt1pr3rupmav8a7av7dqfyvynu2wk02lduggnh9ln4ndze9aqvuv9y3sklwrss 25
@@ -202,7 +202,7 @@ wallet list_unspent
 The output should be similar to the following:
 ```console
 $ make alice-cli
-docker-compose -p bitlight-local-env exec -it  wallet-alice /start-wallet.sh repl
+docker compose -p bitlight-local-env exec -it  wallet-alice /start-wallet.sh repl
 Starting wallet...
 Wallet Name: alice
 Network             :  regtest
