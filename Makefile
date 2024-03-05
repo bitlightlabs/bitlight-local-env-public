@@ -140,6 +140,14 @@ lint:
 start-docs:
 	cd docs && make serve
 
+.PHONY: pull
+pull-images: pull-image-esplora-api pull-image-bdk-cli
+
+pull-image-%:
+	@echo "Pull $* image"
+	@docker pull bitlightlabs/$*:latest || echo "no pull $*"
+
+
 build-esplora-api-docker:
 	@echo "Releasing docker image for $*"
 	@cd docker/esplora-api && \
