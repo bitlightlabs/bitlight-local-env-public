@@ -1,0 +1,40 @@
+version: "3.7"
+
+networks:
+  regtest:
+    external: true
+
+services:
+  lnd-alice:
+    extends:
+      service: lnd
+      file: docker/docker-compose.base.yaml
+    networks:
+      - regtest
+    environment:
+      - RPCHOST=10.200.10.205
+      - RPCUSER=${RPC_USER}
+      - RPCPASS=${RPC_PASSWORD}
+      - NETWORK=regtest
+      - CHAIN=bitcoin
+      - LND_DEBUG=debug
+      - BACKEND=bitcoind
+    volumes:
+      - ./docker/lnd/data/alice:/root/.lnd
+
+  lnd-bob:
+    extends:
+      service: lnd
+      file: docker/docker-compose.base.yaml
+    networks:
+      - regtest
+    environment:
+      - RPCHOST=10.200.10.205
+      - RPCUSER=${RPC_USER}
+      - RPCPASS=${RPC_PASSWORD}
+      - NETWORK=regtest
+      - CHAIN=bitcoin
+      - LND_DEBUG=debug
+      - BACKEND=bitcoind
+    volumes:
+      - ./docker/lnd/data/bob:/root/.lnd

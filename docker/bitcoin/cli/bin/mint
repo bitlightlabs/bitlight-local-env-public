@@ -1,0 +1,7 @@
+#!/bin/sh
+
+blocks_to_mint=${1:-1}
+
+load_wallet wallet
+address=$(bitcoin-cli -rpcwallet=wallet getnewaddress)
+bitcoin-cli generatetoaddress "$blocks_to_mint" "$address"

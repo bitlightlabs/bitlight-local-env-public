@@ -1,0 +1,155 @@
+version: "3.7"
+
+volumes:
+  bitcoin-data:
+  wallet-data:
+
+networks:
+  regtest:
+    external: true
+
+services:
+  init:
+    image: lncm/bitcoind:v25.0
+    networks:
+      - regtest
+    restart: "no"
+    entrypoint: /bin/sh
+    volumes:
+      - bitcoin-data:/data/.bitcoin
+    command:
+      - -c
+      - |
+        echo "Initializing bitcoind configuration"
+        echo "regtest=1" > /data/.bitcoin/bitcoin.conf
+        echo "server=1" >> /data/.bitcoin/bitcoin.conf
+        echo "taproot=1" >> /data/.bitcoin/bitcoin.conf
+        echo "rpcuser=${RPC_USER}" >> /data/.bitcoin/bitcoin.conf
+        echo "rpcpassword=${RPC_PASSWORD}" >> /data/.bitcoin/bitcoin.conf
+        echo "rpcconnect=10.200.10.205" >> /data/.bitcoin/bitcoin.conf
+        
+        echo "changetype=bech32" >> /data/.bitcoin/bitcoin.conf
+        echo "fallbackfee=0.0002" >> /data/.bitcoin/bitcoin.conf
+        echo "zmqpubrawblock=tcp://0.0.0.0:28332" >> /data/.bitcoin/bitcoin.conf
+        echo "zmqpubrawtx=tcp://0.0.0.0:28333" >> /data/.bitcoin/bitcoin.conf
+        echo "Completed bitcoind configuration"
+
+  bitcoin-core:
+    networks:
+      regtest:
+        ipv4_address: 10.200.10.205 # bitcoind container ip address for electrs
+    image: lncm/bitcoind:v25.0
+    restart: on-failure
+    depends_on:
+      - init
+    volumes:
+      - bitcoin-data:/data/.bitcoin
+      - ./docker/bitcoin/cli:/cli
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        echo "Waiting for initialization to complete"
+        while [ ! -f /data/.bitcoin/bitcoin.conf ]; do sleep 1; done
+        echo "Starting bitcoind"
+        
+        bitcoind -regtest -rpcbind=0.0.0.0 -rpcallowip=10.200.10.0/24 -listenonion=0
+
+  mining:
+    image: lncm/bitcoind:v25.0
+    networks:
+      - regtest
+    restart: on-failure
+    depends_on:
+      - bitcoin-core
+    environment:
+      - RPC_USER=${RPC_USER}
+      - RPC_PASSWORD=${RPC_PASSWORD}
+      - BITCOIN_CORE_IP=10.200.10.205
+    volumes:
+      - bitcoin-data:/data/.bitcoin
+      - ./docker/mining:/mining
+    working_dir: /mining
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        ./scripts/generating_blocks.sh
+
+  esplora:
+    extends:
+      service: esplora
+      file: docker/docker-compose.base.yaml
+    environment:
+      - API_URL=http://127.0.0.1:${API_PORT}
+    ports:
+      - "${EXPLORE_UI_PORT:-5002}:5000"
+
+  esplora-api:
+    extends:
+      service: esplora-api
+      file: docker/docker-compose.base.yaml
+    networks:
+      - regtest
+    depends_on:
+      - bitcoin-core
+    command:
+      - -vvvv
+      - --network
+      - regtest
+      - --daemon-dir
+      - /data/.bitcoin
+      - --daemon-rpc-addr
+      # electrs cannot resolve the hostname of the bitcoind container, use ip address instead
+      - 10.200.10.205:18443
+      - --cors
+      - "*"
+      - --cookie
+      - "${RPC_USER}:${RPC_PASSWORD}"
+      - --http-addr
+      - '0.0.0.0:3000'
+      - --electrum-rpc-addr
+      - 0.0.0.0:60401
+    volumes:
+      - bitcoin-data:/data/.bitcoin
+    ports:
+      - "${API_PORT}:3000"
+
+  wallet-alice:
+    networks:
+      - regtest
+    environment:
+      - WALLET_NAME=alice
+      - MNEMONIC=${ALICE_MNEMONIC}
+    extends:
+      service: wallet
+      file: docker/docker-compose.base.yaml
+    volumes:
+      - bitcoin-data:/data/.bitcoin
+      - wallet-data:/root/.bdk-bitcoin
+
+  wallet-bob:
+    networks:
+      - regtest
+    environment:
+      - WALLET_NAME=bob
+      - MNEMONIC=${BOB_MNEMONIC}
+    extends:
+      service: wallet
+      file: docker/docker-compose.base.yaml
+    volumes:
+      - bitcoin-data:/data/.bitcoin
+      - wallet-data:/root/.bdk-bitcoin
+
+  wallet-dave:
+    networks:
+      - regtest
+    environment:
+      - WALLET_NAME=dave
+      - MNEMONIC=${DAVE_MNEMONIC}
+    extends:
+      service: wallet
+      file: docker/docker-compose.base.yaml
+    volumes:
+      - bitcoin-data:/data/.bitcoin
+      - wallet-data:/root/.bdk-bitcoin

@@ -1,0 +1,34 @@
+services:
+  lnd:
+    image: ${DOCKER_NS:-bitlightlabs}/lnd:${DOCKER_TAG:-latest}
+    build:
+      context: lnd
+    environment:
+      - RPCHOST=10.200.10.205
+      - RPCUSER=${RPC_USER}
+      - RPCPASS=${RPC_PASSWORD}
+      - NETWORK=regtest
+      - CHAIN=bitcoin
+      - LND_DEBUG=debug
+      - BACKEND=bitcoind
+    entrypoint: [ "./start-lnd.sh" ]
+
+  wallet:
+    image: ${DOCKER_NS:-bitlightlabs}/bdk-cli:${DOCKER_TAG:-latest}
+    build:
+      context: wallet
+    environment:
+      - RPCHOST=10.200.10.205
+      - RPCUSER=${RPC_USER}
+      - RPCPASS=${RPC_PASSWORD}
+      - NETWORK=regtest
+
+  esplora:
+    image: ${DOCKER_NS:-bitlightlabs}/esplora:${DOCKER_TAG:-latest}
+    build:
+      context: esplora
+
+  esplora-api:
+    image: ${DOCKER_NS:-bitlightlabs}/esplora-api:${DOCKER_TAG:-latest}
+    build:
+      context: esplora-api

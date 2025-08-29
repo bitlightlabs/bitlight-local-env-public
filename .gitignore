@@ -1,0 +1,8 @@
+.idea/
+
+docker/*/data/
+!docker/*/data/.gitkeep
+
+# Added by cargo
+
+/target
